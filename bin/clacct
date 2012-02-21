@@ -6,8 +6,9 @@
 #(No licensing on this software)
 #********************************
 use Getopt::Long;
+use Date::Parse;
 
-my $version="0.20";
+my $version="0.20+";
 my $cladir=$ENV{HOME} . "/.clacct";
 my $progname="clacct";
 my $long_progname="Command Line Accountant";
@@ -30,6 +31,13 @@ my $isdst;
 my @monthnames=("", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 		"Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 
+my $help_text = <<"END";
+-a account_name\t\t\tApply a specified money
+\t-amount [+-]X.XX\t  amount to an account with
+\t-note 'description'\t  a description attached
+\t-d date \t\tset the date for the transaction (e.g. in form YYYY-MM-DD)
+END
+
 sub printHelp {
     print "Usage: $progname [options...]\n";
     print "General Options:\n";
@@ -48,9 +56,10 @@ sub printHelp {
     print "-l -acc account_name\t\tList the contents of an account\n" .
 	  "\t[-lines n]\t\t  (opt.) only showing last n lines\n";
     print "-r account_name\t\t\tRemove an account\n";
-    print "-a account_name\t\t\tApply a specified money\n" .
-          "\t-amount [+-]X.XX\t  amount to an account with\n " .
-          "\t-note 'description'\t  a description attached\n";
+
+    print $help_text;
+
+
     print "-mv X.XX\t\t\tMove money from one\n" .
 	  "\t-from account_name\t  account to another\n" .
 	  "\t-to account_name\n" .
@@ -61,6 +70,7 @@ sub printHelp {
     print "-pay n\t\t\t\tPay the IOU indicated by index n\n";
     print "\nAccount names must be alphabetic ";
     print " (i.e. [A-Za-z]+)\n";
+
 }
 
 sub parseEpochTime {
@@ -73,6 +83,8 @@ sub parseEpochTime {
 sub printVersion {
     print "$long_progname v$version\n";
 }
+
+
 
 sub newAccount {
     my $accountName=shift;
@@ -93,7 +105,10 @@ sub addTransaction {
     my $checkNumber=shift;
     my $trAmount=shift;
     my $trDesc=shift;
+    my $dateOption=shift;
     my $accountFilename=$cladir . "/" . $accountName;
+
+    if($dateOption) {$rightNow= str2time($dateOption);};
 
     $trDesc =~ s/\#/\\\#/;
     $checkNumber="" if($checkNumber < 1);
@@ -310,6 +325,7 @@ my $argnum=0;
 
 my $helpOption=0;
 my $versionOption=0;
+my $dateOption=0;
 my $newAccountOption=0;
 my $listAccountsOption=0;
 my $removeAccountOption=0;
@@ -334,6 +350,7 @@ GetOptions('v|verbose' => \$verbose,
 	   'q|quiet' => sub {$verbose=0},
 	   'av=s' => \$alwaysVerboseOption,
 	   'aq=s' => \$alwaysQuietOption,
+           'd=s' => \$dateOption,
            'help' => \$helpOption,
            'version' => \$versionOption,
            'n=s' => \$newAccountOption,
@@ -353,6 +370,7 @@ GetOptions('v|verbose' => \$verbose,
 	   'bal=s' => \$balanceOption,
 	   'cn=i' => \$checkNumberOption,
 	   'rec=s' => \$reconcileOption);
+
 
 if($helpOption) {
     printHelp();
@@ -383,17 +401,20 @@ elsif($applyTransactionOption) {
     addTransaction($applyTransactionOption,
 		   $checkNumberOption,
 		   $amountOption, 
-		   $noteOption);
+		   $noteOption,
+                   $dateOption);
 }
 elsif($moveOption) {
     addTransaction($fromOption,
 		   $checkNumberOption,
 		   $moveOption * -1,
-		   $noteOption);
+		   $noteOption,
+                   $dateOption);
     addTransaction($toOption,
 		   $checkNumberOption,
 		   $moveOption,
-		   $noteOption);
+		   $noteOption,
+                   $dateOption);
 }
 elsif($iouOption) {
     addIOU($iouOption, $noteOption);
