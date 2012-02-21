@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+sum=0.0
+cla-ls | awk 'BEGIN {sum=0} {bal = `clacct -bal $acc` ; print $1, bal; sum += $1} END {print sum}'
+
+
+exit
+
+while read acc
+do
+    bal=`clacct -bal $acc`
+    printf "%4s %10.2f\n" $acc $bal
+    sum=wcalc <<<"$sum + $bal"
+done
+echo $sum

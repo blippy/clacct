@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function print_help {
+cat <<EOF
+$0 - list accounts of clacct
+-h this help
+EOF
+}
+
+function main {
+    CLADIR=~/.clacct
+    ls $CLADIR | grep -e "^[A-Za-z]" | sort
+}
+
+
+
+while getopts "h" opt; do
+case $opt in
+    h) print_help ; exit ;;
+esac
+done
+
+main
