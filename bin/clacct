@@ -138,7 +138,7 @@ CN      Date         Time     Amount    Balance   Description
 .
 format STDOUT = 
 @<<<<   @<<<<<<<<<<< @<<<< @#####.##  @#####.##   @<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-$checkNumber  $tempdate$temptime $amount $balance $description
+$checkNumber,  $tempdate, $temptime, $amount, $balance, $description
 .
 	while($line=shift @lines) {
 	    $count++;
