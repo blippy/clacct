@@ -2,4 +2,22 @@
 Fork of Joe Kauzlarich's Cmomand-Line Accountant
 http://clacct.sourceforge.net/
 
+
+EXAMPLE
+=======
+
+Create some accounts: an opening balance account,  a bank account, and a shopping account:
+   clacct -n open
+   clacct -n bank
+   clacct -n shop
+
+Set an opening balance in the bank:
+   clacct -a bank -amount 1000.00 -note 'opening balance' -d 2012-04-06
+
+
+
+
+ABOUT
+=====
+
 Created: 21-Feb-2012
